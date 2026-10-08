@@ -1,7 +1,8 @@
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 from sklearn.base import BaseEstimator, OutlierMixin
-from sklearn.cluster import KMeans
+
+from ts_benchmark.baselines.sklearn_compat import kmeans_sklearn024
 
 
 class KMeansAD(BaseEstimator, OutlierMixin):
@@ -9,8 +10,8 @@ class KMeansAD(BaseEstimator, OutlierMixin):
         self.k = configs.k
         self.window_size = configs.window_size
         self.stride = configs.stride
-        # n_init=10 is the scikit-learn<1.4 default the original results were produced with
-        self.model = KMeans(n_clusters=configs.k, n_init=10)
+        # scikit-learn 0.24 behaviour of KMeans(n_clusters=k), which the original results used
+        self.model = kmeans_sklearn024(n_clusters=configs.k)
         self.padding_length = 0
 
     def preprocess_data(self, X: np.ndarray) -> np.ndarray:
