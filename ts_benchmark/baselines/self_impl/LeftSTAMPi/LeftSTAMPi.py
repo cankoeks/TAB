@@ -56,7 +56,8 @@ class LeftSTAMPi:
 
         warm_up_data = train_data[-self.warm_up_len :]
         test_data = test.values.T.astype(np.float64).squeeze()
-        stream = stumpi(warm_up_data, m=self.window_size)
+        # egress=False keeps the growing series of stumpy<1.5 (newer default: fixed length)
+        stream = stumpi(warm_up_data, m=self.window_size, egress=False)
         for point in test_data:
             stream.update(point)
 
