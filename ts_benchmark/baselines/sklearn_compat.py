@@ -9,6 +9,7 @@ restore the old behaviour explicitly.
 """
 import numpy as np
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.utils.extmath import row_norms
 
@@ -82,3 +83,49 @@ def kmeans_sklearn024(n_clusters, random_state=None, **kwargs):
     }
     params.update(kwargs)
     return KMeans(n_clusters=n_clusters, random_state=random_state, **params)
+
+
+def orient_components_u_based(pca, X):
+    """
+    Orient fitted PCA components with scikit-learn 0.24's sign convention.
+
+    scikit-learn<1.5 used ``svd_flip(U, Vt)``: the largest absolute entry of each
+    column of U is positive. 1.5 switched to ``u_based_decision=False``, which can
+    flip components and with them every projection onto them.
+
+    :param pca: A fitted sklearn PCA.
+    :param X: The data the PCA was fitted on.
+    :return: The same PCA, with re-oriented ``components_``.
+    """
+    projections = (np.asarray(X, dtype=float) - pca.mean_) @ pca.components_.T
+    max_abs_rows = np.argmax(np.abs(projections), axis=0)
+    signs = np.sign(projections[max_abs_rows, range(projections.shape[1])])
+    signs[signs == 0] = 1
+    pca.components_ *= signs[:, np.newaxis]
+    return pca
+
+
+def fit_pca_sklearn024(X, n_components, random_state=None):
+    """
+    Fit ``PCA(n_components)`` as scikit-learn 0.24 did with ``svd_solver='auto'``.
+
+    scikit-learn 1.5 changed the 'auto' solver policy (it now prefers
+    'covariance_eigh' for tall data) and the sign convention. This picks the solver
+    0.24 would have used for this data ('full' or 'randomized') and restores the
+    old component orientation.
+
+    :param X: Data of shape (n_samples, n_features).
+    :param n_components: Number of components (int).
+    :param random_state: Seed, RandomState or None (the global numpy state).
+    :return: A fitted PCA.
+    """
+    X = np.asarray(X)
+    if max(X.shape) <= 500:
+        solver = "full"
+    elif 1 <= n_components < 0.8 * min(X.shape):
+        solver = "randomized"
+    else:
+        solver = "full"
+    pca = PCA(n_components=n_components, svd_solver=solver, random_state=random_state)
+    pca.fit(X)
+    return orient_components_u_based(pca, X)

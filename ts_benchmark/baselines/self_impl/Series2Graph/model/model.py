@@ -18,7 +18,8 @@ import numpy as np
 import pandas as pd
 from scipy.signal import argrelextrema
 from scipy.stats import gaussian_kde
-from sklearn.decomposition import PCA
+
+from ts_benchmark.baselines.sklearn_compat import fit_pca_sklearn024
 
 
 class Series2Graph_model():
@@ -70,8 +71,8 @@ class Series2Graph_model():
 
         phase_space_1 = self.__build_phase_space(ts)
 
-        pca_1 = PCA(n_components=3)
-        pca_1.fit(phase_space_1)
+        # scikit-learn 0.24 behaviour of PCA(n_components=3), which the original results used
+        pca_1 = fit_pca_sklearn024(phase_space_1, n_components=3)
         reduced = pd.DataFrame(pca_1.transform(phase_space_1), columns=[str(i) for i in range(3)])
         reduced_ref = pd.DataFrame(pca_1.transform(df_ref), columns=[str(i) for i in range(3)])
 
