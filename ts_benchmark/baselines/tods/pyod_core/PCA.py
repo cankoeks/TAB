@@ -13,6 +13,34 @@ from pyod.models.pca import PCA as PCA_PYOD
 from .utility import get_sub_matrices
 
 
+def _orient_components_like_sklearn_024(model, X):
+    """Orient the fitted principal components as scikit-learn<1.5 did.
+
+    Added for TAB's Python 3.12 port. pyod's PCA score is the distance of each
+    (standardized) sample to the selected components, so it depends on the sign
+    of each component. scikit-learn 1.5 changed PCA's sign convention from
+    ``svd_flip(U, Vt)`` (largest |U| entry of each column positive) to
+    ``svd_flip(U, Vt, u_based_decision=False)``; restoring the U-based
+    orientation keeps the scores of the original environment.
+    """
+    X_raw = X
+    if model.standardization:
+        X = model.scaler_.transform(X)
+    detector = model.detector_
+    # the columns of U * S are the projections of the centered data
+    projections = (X - detector.mean_) @ detector.components_.T
+    max_abs_rows = np.argmax(np.abs(projections), axis=0)
+    signs = np.sign(projections[max_abs_rows, range(projections.shape[1])])
+    signs[signs == 0] = 1
+    detector.components_ *= signs[:, np.newaxis]
+    model.components_ = detector.components_
+    model.selected_components_ = model.components_[
+                                 -1 * model.n_selected_components_:, :]
+    # the training scores (and with them the threshold) were computed during fit
+    model.decision_scores_ = model.decision_function(X_raw)
+    model._process_decision_scores()
+
+
 class PCA(CollectiveBaseDetector):
     """PCA-based outlier detection with both univariate and multivariate
     time series data. TS data will be first transformed to tabular format. 
@@ -194,6 +222,7 @@ class PCA(CollectiveBaseDetector):
 
         # fit the PCA model
         self.model_.fit(sub_matrices)
+        _orient_components_like_sklearn_024(self.model_, sub_matrices)
         self.decision_scores_ = self.model_.decision_scores_
         self._process_decision_scores()
         return self
