@@ -31,6 +31,11 @@ It differs from that port in:
 it, and pyod ≥ 3 requires Python ≥ 3.9. With the same pyod on both sides, a parity
 check isolates the effect of the port.
 
+The legacy file adds `more_itertools`. The vendored TODS code imports it, but the
+original requirements did not list it. On a GPU machine, run the legacy environment with
+`NUMBA_DISABLE_CUDA=1`. stumpy 1.4 compiles a CUDA kernel on import, which numba 0.55
+cannot build for current NVIDIA drivers. No TAB model uses stumpy's GPU functions.
+
 `requirements.txt` keeps `numpy<2` for salesforce-merlion, and `transformers<4.50` because
 the GPT-2 code vendored by the LLM baselines targets the 4.x API.
 
