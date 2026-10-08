@@ -5,3 +5,8 @@ result/
 .git
 *.DS_Store
 venv/
+**/__pycache__/
+ts_benchmark/baselines/LLM/checkpoints/
+ts_benchmark/baselines/pre_train/checkpoints/
+.venv/
+*.pyc
