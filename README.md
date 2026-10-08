@@ -1,6 +1,6 @@
 # TAB: Unified Benchmarking of Time Series Anomaly Detection Methods
 
-[![PVLDB](https://img.shields.io/badge/PVLDB'25-TAB-orange)](https://arxiv.org/pdf/2403.20150.pdf)  [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)  [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-blue)](https://pytorch.org/)  ![Stars](https://img.shields.io/github/stars/decisionintelligence/TAB)  
+[![PVLDB](https://img.shields.io/badge/PVLDB'25-TAB-orange)](https://arxiv.org/pdf/2403.20150.pdf)  [![Python](https://img.shields.io/badge/Python-3.12-blue)](https://www.python.org/)  [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-blue)](https://pytorch.org/)  ![Stars](https://img.shields.io/github/stars/decisionintelligence/TAB)  
 
 
 > [!IMPORTANT]
@@ -58,15 +58,22 @@ The table below provides a visual overview of how TAB's key features compare to 
 
 > [!IMPORTANT]
 >
-> this project is fully tested under python 3.8, it is recommended that you set the Python version to 3.8.
+> This branch runs on **Python 3.12**. The original code was tested under Python 3.8; see
+> [docs/PORTING_PY312.md](docs/PORTING_PY312.md) for what changed and how the results were checked against it.
 
 1. Installation:
 
-Given a python environment (**note**: this project is fully tested under **python 3.8**), install the dependencies with the following command:
+Given a Python 3.12 environment, install the dependencies with the following command:
 
 ```shell
 pip install -r requirements.txt
 ```
+
+The TODS baselines (`tods.*`) now call pyod directly instead of going through the d3m stack, which only
+installs on Python 3.8. `tods.autoencoderski` and `tods.lstmodetectorski` depended on its TensorFlow models
+and are not available on Python 3.12. To run the original d3m-based wrappers, for example to reproduce
+historical scores, use a separate Python 3.8 environment with `requirements-legacy-py38.txt` and the
+upstream code (commit `5a7e6f8`). Never install that file into the Python 3.12 environment.
 
 2. Data preparation
 
