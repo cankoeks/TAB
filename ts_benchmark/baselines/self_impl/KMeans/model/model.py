@@ -9,7 +9,8 @@ class KMeansAD(BaseEstimator, OutlierMixin):
         self.k = configs.k
         self.window_size = configs.window_size
         self.stride = configs.stride
-        self.model = KMeans(n_clusters=configs.k)
+        # n_init=10 is the scikit-learn<1.4 default the original results were produced with
+        self.model = KMeans(n_clusters=configs.k, n_init=10)
         self.padding_length = 0
 
     def preprocess_data(self, X: np.ndarray) -> np.ndarray:
