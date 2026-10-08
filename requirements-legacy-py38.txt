@@ -3,8 +3,7 @@
 #
 # Do NOT install this into the Python 3.12 environment. It exists only to run the
 # original d3m-based TODS wrappers (ts_benchmark/baselines/tods/third_party) on the
-# upstream code, e.g. to reproduce historical scores or to regenerate the parity
-# reference (see docs/PORTING_PY312.md).
+# upstream code (commit 5a7e6f8), e.g. to reproduce historical scores.
 #
 # On a machine with a recent NVIDIA driver, run this environment with
 # NUMBA_DISABLE_CUDA=1: stumpy 1.4 compiles a CUDA kernel on import, which the old

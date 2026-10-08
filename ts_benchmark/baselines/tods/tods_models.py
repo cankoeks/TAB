@@ -36,8 +36,8 @@ logger = logging.getLogger(__name__)
 
 # Effective constructor arguments of the estimators built by the original d3m
 # primitives when no hyperparameters are given (TAB's scripts always pass '{}').
-# Generated with scripts/parity/dump_tods_defaults.py in the legacy Python 3.8
-# environment: ``primitive._clf.get_params()`` for each primitive. Several of
+# Dumped in the legacy Python 3.8 environment as ``primitive._clf.get_params()``
+# of each primitive built with ``Hyperparams.defaults()``. Several of
 # them differ from current pyod defaults (e.g. HBOS tol=0.1, PCA whiten=True).
 _LEGACY_DEFAULTS = {
     "IsolationForestSKI": {

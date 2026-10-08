@@ -58,8 +58,9 @@ The table below provides a visual overview of how TAB's key features compare to 
 
 > [!IMPORTANT]
 >
-> This branch runs on **Python 3.12**. The original code was tested under Python 3.8; see
-> [docs/PORTING_PY312.md](docs/PORTING_PY312.md) for what changed and how the results were checked against it.
+> This branch runs on **Python 3.12**. The original code was tested under Python 3.8. Where newer
+> library versions changed defaults the baselines relied on, the old behaviour is restored explicitly
+> so results match the original environment.
 
 1. Installation:
 
